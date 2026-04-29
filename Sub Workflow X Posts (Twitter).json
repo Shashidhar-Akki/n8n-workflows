@@ -1,0 +1,255 @@
+{
+  "name": "Sub Workflow X Posts (Twitter)",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "input"
+            }
+          ]
+        }
+      },
+      "id": "...",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        112,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "...",
+              "name": "response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        688,
+        208
+      ],
+      "id": "...",
+      "name": "Response"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "...",
+              "name": "response",
+              "value": "Error occurred. Please try again.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        688,
+        400
+      ],
+      "id": "...",
+      "name": "Try Again"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        344,
+        528
+      ],
+      "id": "...",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "...",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "...",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 11111111,
+          "mode": "list",
+          "cachedResultName": "X posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit#gid=..."
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Date', ``, 'string') }}",
+            "Theme": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Theme', ``, 'string') }}",
+            "Post": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Post', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Theme",
+              "displayName": "Theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Post",
+              "displayName": "Post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        472,
+        528
+      ],
+      "id": "...",
+      "name": "savePost",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "...",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.input}}",
+        "options": {
+          "systemMessage": "# Role  \nYou are an expert in creating high-quality, engaging, and modern posts for **X (formerly Twitter)**. You receive information and generate posts that are:  \n\n- **Concise and informative**, without unnecessary details.  \n- **Engaging and dynamic**, designed to capture attention and encourage interaction.  \n- **Trending and optimized**, using relevant keywords and hashtags for maximum reach.  \n- **Structured for readability**, utilizing short paragraphs, line breaks, and emojis to enhance engagement.  \n\n### **Post Style**  \nYour posts should primarily focus on **AI topics** and often start with this format:  \n> *\"XYZ just dropped XYZ, and people are already doing crazy stuff with it—5 examples.\"*\nAfter the intro, you list 5 examples\n\n**Important:** When creating a post, always use the **savePost** tool to store it.  \n\n# Tools  \n\n## savePost  \nUse this tool to save the post in a **Google Sheets document**. Include:  \n- **Column 1:** Current date  \n- **Column 2:** Post topic  \n- **Column 3:** Post content (plain text)  \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        336,
+        304
+      ],
+      "id": "...",
+      "name": "Social Media Agent",
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Social Media Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Social Media Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "savePost": {
+      "ai_tool": [
+        [
+          {
+            "node": "Social Media Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Social Media Agent": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Try Again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "...",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "..."
+  },
+  "id": "...",
+  "tags": []
+}
